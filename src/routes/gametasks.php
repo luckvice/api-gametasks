@@ -8,7 +8,6 @@ $app = new \Slim\App;
 /*   [Modulo jogos] */
 
 $app->get('/api/listaJogos', function(Request $request, Response $response){
-echo json_encode("?");
     $sql = "SELECT * FROM jogos";
     try{
         $db = new db();
@@ -61,12 +60,51 @@ $app->put('/api/atualizaJogo/{id}', function(Request $request, Response $respons
         echo '{"error" : {"text":'.$e->getMessage().'}';
     }
 });
-$app->get('/api/novoJogo', function(Request $request, Response $response){
-    echo json_encode("Novo jogo");
+$app->post('/api/novoJogo', function(Request $request, Response $response){
+    $nome               = $request->getParam('nome');
+    $sinopse            = $request->getParam('sinopse');
+    $image_url          = $request->getParam('image_url');
+    $meta_critic_rank   = $request->getParam('meta_critic_rank');
+    $produtora          = $request->getParam('produtora');
+    $desenvolvedora     = $request->getParam('desenvolvedora');
+  
+    
+      $sql = "INSERT INTO jogos (nome, sinopse, image_url, meta_critic_rank, produtora, desenvolvedora) 
+              VALUES (:nome, :sinopse, :image_url, :meta_critic_rank, :produtora, :desenvolvedora)";
+      try{
+          $db = new db();
+          $db = $db->connectDB();
+          $resultado = $db->prepare($sql);
+          $resultado->bindParam(':nome', $nome);
+          $resultado->bindParam(':sinopse', $sinopse);
+          $resultado->bindParam(':image_url', $image_url);
+          $resultado->bindParam(':meta_critic_rank', $meta_critic_rank);
+          $resultado->bindParam(':produtora', $produtora);
+          $resultado->bindParam(':desenvolvedora', $desenvolvedora);  
+          $resultado->execute();
+          echo json_encode("Novo Jogo adicionado");
+  
+          $resultado = null;
+          $db = null;
+      }catch(PDOException $e){
+          echo '{"error" : {"text":'.$e->getMessage().'}';
+      }
 });
 
 $app->get('/api/verJogo/{id}', function(Request $request, Response $response){
-    echo json_encode("ver jogo");
+    $id_jogo            = $request->getAttribute('id');
+    $sql = "SELECT * FROM jogos WHERE id = $id_jogo";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->query($sql);
+        if ($resultado->rowCount() > 0) {
+            $jogos = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($jogos);
+        }else{ echo json_encode("Nenhum jogo encontrado"); }
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
 });
 
 $app->delete('/api/deletaJogo/{id}', function(Request $request, Response $response){
