@@ -1,0 +1,16 @@
+Para postman
+
+Headers
+
+Content-Type - application/json
+
+RAW
+{
+    "id": "1",
+    "nome": "GTA VI modificado",
+    "sinopse": "Ação",
+    "image_url": "img/gta.png",
+    "meta_critic_rank": "98",
+    "produtora": "Take two",
+    "desenvolvedora": "Rockstar Games"
+}
