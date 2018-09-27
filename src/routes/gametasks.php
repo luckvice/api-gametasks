@@ -36,7 +36,7 @@ $app->put('/api/atualizaJogo/{id}', function(Request $request, Response $respons
     $sql = "UPDATE jogos SET 
             nome                = :nome,
             sinopse             = :sinopse,
-            image_url             = :image_url,
+            image_url           = :image_url,
             meta_critic_rank    = :meta_critic_rank,
             produtora           = :produtora,
             desenvolvedora      = :desenvolvedora
@@ -61,11 +61,6 @@ $app->put('/api/atualizaJogo/{id}', function(Request $request, Response $respons
         echo '{"error" : {"text":'.$e->getMessage().'}';
     }
 });
-
-$app->get('/api/deletaJogo/{id}', function(Request $request, Response $response){
-    echo json_encode("Deleta jogo");
-});
-
 $app->get('/api/novoJogo', function(Request $request, Response $response){
     echo json_encode("Novo jogo");
 });
@@ -73,6 +68,30 @@ $app->get('/api/novoJogo', function(Request $request, Response $response){
 $app->get('/api/verJogo/{id}', function(Request $request, Response $response){
     echo json_encode("ver jogo");
 });
+
+$app->delete('/api/deletaJogo/{id}', function(Request $request, Response $response){
+    $id_jogo = $request->getAttribute('id');
+
+    $sql = "DELETE FROM jogos  WHERE id = $id_jogo";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->execute();
+      if($resultado->rowCount() > 0 ){
+          echo json_encode("Jogo  deletado");
+      }else{
+          echo json_encode("Jogo id invalido");
+      }
+      
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+
 
 /*    [Modulo jogos FIM] */
 
