@@ -233,3 +233,105 @@ $app->get('/api/verPlataforma/{id}', function(Request $request, Response $respon
 });
 
 /*    [Modulo plataformas FIM] */
+
+
+
+/*  [Modulo generos] */
+
+$app->get('/api/listaGeneros', function(Request $request, Response $response){
+    $sql = "SELECT * FROM generos";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->query($sql);
+        if ($resultado->rowCount() > 0) {
+            $jogos = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($jogos);
+        }else{ echo json_encode("Nenhum genero encontrado"); }
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
+});
+
+$app->put('/api/atualizaGeneros/{id}', function(Request $request, Response $response){
+    $id_genero      = $request->getAttribute('id');
+    $gnr_name       = $request->getParam('gnr_name');
+
+    $sql = "UPDATE generos SET 
+            gnr_name  = :gnr_name
+            WHERE id = $id_genero";
+     try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->bindParam(':gnr_name', $gnr_name);
+        $resultado->execute();
+        echo json_encode("Genero modificado com sucesso!");
+
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+$app->delete('/api/deletaPlataforma/{id}', function(Request $request, Response $response){
+    $id_plataforma = $request->getAttribute('id');
+
+    $sql = "DELETE FROM plataformas  WHERE id = $id_plataforma";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->execute();
+      if($resultado->rowCount() > 0 ){
+          echo json_encode("Plataforma  deletada!");
+      }else{
+          echo json_encode("Plataforma id invalido");
+      }
+      
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+$app->post('/api/novaPlataforma', function(Request $request, Response $response){
+    $pl_name = $request->getParam('pl_name');
+  
+    
+      $sql = "INSERT INTO plataformas (pl_name) 
+              VALUES (:pl_name)";
+      try{
+          $db = new db();
+          $db = $db->connectDB();
+          $resultado = $db->prepare($sql);
+          $resultado->bindParam(':pl_name', $pl_name);
+          $resultado->execute();
+          echo json_encode("Nova plataforma adicionada com sucesso!");
+  
+          $resultado = null;
+          $db = null;
+      }catch(PDOException $e){
+          echo '{"error" : {"text":'.$e->getMessage().'}';
+      }
+});
+
+$app->get('/api/verPlataforma/{id}', function(Request $request, Response $response){
+    $id_plataforma = $request->getAttribute('id');
+    $sql = "SELECT * FROM plataformas WHERE id = $id_plataforma";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->query($sql);
+        if ($resultado->rowCount() > 0) {
+            $plataformas = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($plataformas);
+        }else{ echo json_encode("Nenhum jogo encontrado"); }
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
+});
+
+/*    [Modulo generos FIM] */
