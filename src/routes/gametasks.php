@@ -275,19 +275,19 @@ $app->put('/api/atualizaGeneros/{id}', function(Request $request, Response $resp
     }
 });
 
-$app->delete('/api/deletaPlataforma/{id}', function(Request $request, Response $response){
-    $id_plataforma = $request->getAttribute('id');
+$app->delete('/api/deletaGenero/{id}', function(Request $request, Response $response){
+    $id_genero = $request->getAttribute('id');
 
-    $sql = "DELETE FROM plataformas  WHERE id = $id_plataforma";
+    $sql = "DELETE FROM generos  WHERE id = $id_genero";
     try{
         $db = new db();
         $db = $db->connectDB();
         $resultado = $db->prepare($sql);
         $resultado->execute();
       if($resultado->rowCount() > 0 ){
-          echo json_encode("Plataforma  deletada!");
+          echo json_encode("Genero  deletado!");
       }else{
-          echo json_encode("Plataforma id invalido");
+          echo json_encode("Genero id invalido");
       }
       
         $resultado = null;
@@ -297,19 +297,19 @@ $app->delete('/api/deletaPlataforma/{id}', function(Request $request, Response $
     }
 });
 
-$app->post('/api/novaPlataforma', function(Request $request, Response $response){
-    $pl_name = $request->getParam('pl_name');
+$app->post('/api/novoGenero', function(Request $request, Response $response){
+    $gnr_name = $request->getParam('gnr_name');
   
     
-      $sql = "INSERT INTO plataformas (pl_name) 
-              VALUES (:pl_name)";
+      $sql = "INSERT INTO generos (gnr_name) 
+              VALUES (:gnr_name)";
       try{
           $db = new db();
           $db = $db->connectDB();
           $resultado = $db->prepare($sql);
-          $resultado->bindParam(':pl_name', $pl_name);
+          $resultado->bindParam(':gnr_name', $gnr_name);
           $resultado->execute();
-          echo json_encode("Nova plataforma adicionada com sucesso!");
+          echo json_encode("Novo genero adicionado com sucesso!");
   
           $resultado = null;
           $db = null;
@@ -318,9 +318,9 @@ $app->post('/api/novaPlataforma', function(Request $request, Response $response)
       }
 });
 
-$app->get('/api/verPlataforma/{id}', function(Request $request, Response $response){
-    $id_plataforma = $request->getAttribute('id');
-    $sql = "SELECT * FROM plataformas WHERE id = $id_plataforma";
+$app->get('/api/verGeneros/{id}', function(Request $request, Response $response){
+    $id_genero = $request->getAttribute('id');
+    $sql = "SELECT * FROM generos WHERE id = $id_genero";
     try{
         $db = new db();
         $db = $db->connectDB();
