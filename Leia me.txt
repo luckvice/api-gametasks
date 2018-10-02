@@ -1,0 +1,46 @@
+Funções da API Gametasks v0.1 alpha
+
+[Modulo Jogos]
+
+GET	listaJogos
+PUT  	atualizajogo/{id}
+POST 	novoJogo
+GET  	verjogo/{id}
+DELETE 	deletajogo/{id}
+
+[Modulo Plataformas]
+
+GET 	listaPlataformas
+PUT 	atualizaPlatafomra/{id}
+DELETE 	deletaPlataforma/{id}
+POST 	novaPlataforma
+GET 	verPlataforma/{id}
+
+[Modulo Generos]
+
+GET 	listaGeneros
+PUT 	atualizaGenero/{id}
+DELETE 	deletaGenero/{id}
+POST 	novoGenero
+GET 	verGenero/{id}
+
+[Modulo Usuario]
+
+GET 	listaUsuarios
+PUT 	atualizaUsuario/{id}
+DELETE 	deletaUsuario/{id}
+POST 	novoUsuario
+GET 	verUsuario/{id}
+
+[Modulo game-tasks]
+
+GET 	listaGameTasksUser/{id}
+PUT 	atualizaGameTaskUser/{id}
+DELETE 	deletaGameTaskUser/{id}
+POST 	novaGameTask
+
+
+
+
+
+

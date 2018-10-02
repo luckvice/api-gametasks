@@ -487,7 +487,7 @@ $app->get('/api/verUsuario/{id}', function(Request $request, Response $response)
 
 /*  [Modulo game-task] */
 
-$app->get('/api/listaGameTasksByUser/{id}', function(Request $request, Response $response){
+$app->get('/api/listaGameTasksUser/{id}', function(Request $request, Response $response){
     $id_usuario = $request->getAttribute('id');
     $sql = "SELECT * FROM game_task AS gt
             JOIN jogos j        ON gt.id_jogo_task = j.id
