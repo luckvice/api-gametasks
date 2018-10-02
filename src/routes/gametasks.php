@@ -359,7 +359,7 @@ $app->put('/api/atualizaUsuario/{id}', function(Request $request, Response $resp
     $id_usuario     = $request->getAttribute('id');
     $nome           = $request->getParam('nome');
     $genero         = $request->getParam('genero');
-    $idade          = $request->getParam('idade');
+    $dt_nasc        = $request->getParam('dt_nasc');
     $senha          = $request->getParam('senha');
     $email          = $request->getParam('email');
     $nickname       = $request->getParam('nickname');
@@ -370,7 +370,7 @@ $app->put('/api/atualizaUsuario/{id}', function(Request $request, Response $resp
     $sql = "UPDATE usuario SET 
             nome            = :nome, 
             genero          = :genero,
-            idade           = :idade,
+            dt_nasc           = :dt_nasc,
             senha           = :senha, 
             email           = :email, 
             nickname        = :nickname, 
@@ -384,8 +384,9 @@ $app->put('/api/atualizaUsuario/{id}', function(Request $request, Response $resp
         $resultado = $db->prepare($sql);
         $resultado->bindParam(':nome', $nome);
         $resultado->bindParam(':genero', $genero);
-        $resultado->bindParam(':idade', $idade);
+        $resultado->bindParam(':dt_nasc', $dt_nasc);
         $resultado->bindParam(':senha', $senha);
+        $resultado->bindParam(':email', $email);
         $resultado->bindParam(':nickname', $nickname);
         $resultado->bindParam(':steam_profile', $steam_profile);
         $resultado->bindParam(':psn_profile', $psn_profile);
@@ -425,7 +426,7 @@ $app->delete('/api/deletaUsuario/{id}', function(Request $request, Response $res
 $app->post('/api/novoUsuario', function(Request $request, Response $response){
     $nome           = $request->getParam('nome');
     $genero         = $request->getParam('genero');
-    $idade          = $request->getParam('idade');
+    $dt_nasc          = $request->getParam('dt_nasc');
     $senha          = $request->getParam('senha');
     $email          = $request->getParam('email');
     $nickname       = $request->getParam('nickname');
@@ -434,16 +435,17 @@ $app->post('/api/novoUsuario', function(Request $request, Response $response){
     $live_profile   = $request->getParam('live_profile');
   
     
-      $sql = "INSERT INTO usuario (nome,genero,idade,senha,email,nickname,steam_profile,psn_profile,live_profile) 
-              VALUES (:nome,:genero,:idade,:senha,:email,:nickname,:steam_profile,:psn_profile,:live_profile)";
+      $sql = "INSERT INTO usuario (nome,genero,dt_nasc,senha,email,nickname,steam_profile,psn_profile,live_profile) 
+              VALUES (:nome,:genero,:dt_nasc,:senha,:email,:nickname,:steam_profile,:psn_profile,:live_profile)";
       try{
           $db = new db();
           $db = $db->connectDB();
           $resultado = $db->prepare($sql);
           $resultado->bindParam(':nome', $nome);
           $resultado->bindParam(':genero', $genero);
-          $resultado->bindParam(':idade', $idade);
+          $resultado->bindParam(':dt_nasc', $dt_nasc);
           $resultado->bindParam(':senha', $senha);
+          $resultado->bindParam(':email', $email);
           $resultado->bindParam(':nickname', $nickname);
           $resultado->bindParam(':steam_profile', $steam_profile);
           $resultado->bindParam(':psn_profile', $psn_profile);
