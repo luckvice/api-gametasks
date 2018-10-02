@@ -253,7 +253,7 @@ $app->get('/api/listaGeneros', function(Request $request, Response $response){
     }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
 });
 
-$app->put('/api/atualizaGeneros/{id}', function(Request $request, Response $response){
+$app->put('/api/atualizaGenero/{id}', function(Request $request, Response $response){
     $id_genero      = $request->getAttribute('id');
     $gnr_name       = $request->getParam('gnr_name');
 
@@ -318,7 +318,7 @@ $app->post('/api/novoGenero', function(Request $request, Response $response){
       }
 });
 
-$app->get('/api/verGeneros/{id}', function(Request $request, Response $response){
+$app->get('/api/verGenero/{id}', function(Request $request, Response $response){
     $id_genero = $request->getAttribute('id');
     $sql = "SELECT * FROM generos WHERE id = $id_genero";
     try{
@@ -328,10 +328,150 @@ $app->get('/api/verGeneros/{id}', function(Request $request, Response $response)
         if ($resultado->rowCount() > 0) {
             $plataformas = $resultado->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($plataformas);
-        }else{ echo json_encode("Nenhum jogo encontrado"); }
+        }else{ echo json_encode("Nenhum Genero encontrado"); }
         $resultado = null;
         $db = null;
     }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
 });
 
 /*    [Modulo generos FIM] */
+
+
+
+/*  [Modulo usuario] */
+
+$app->get('/api/listaUsuarios', function(Request $request, Response $response){
+    $sql = "SELECT * FROM usuario";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->query($sql);
+        if ($resultado->rowCount() > 0) {
+            $jogos = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($jogos);
+        }else{ echo json_encode("Nenhum usuario encontrado"); }
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
+});
+
+$app->put('/api/atualizaUsuario/{id}', function(Request $request, Response $response){
+    $id_usuario     = $request->getAttribute('id');
+    $nome           = $request->getParam('nome');
+    $genero         = $request->getParam('genero');
+    $idade          = $request->getParam('idade');
+    $senha          = $request->getParam('senha');
+    $email          = $request->getParam('email');
+    $nickname       = $request->getParam('nickname');
+    $steam_profile  = $request->getParam('steam_profile');
+    $psn_profile    = $request->getParam('psn_profile');
+    $live_profile   = $request->getParam('live_profile');
+
+    $sql = "UPDATE usuario SET 
+            nome            = :nome, 
+            genero          = :genero,
+            idade           = :idade,
+            senha           = :senha, 
+            email           = :email, 
+            nickname        = :nickname, 
+            steam_profile   = :steam_profile, 
+            psn_profile     = :psn_profile, 
+            live_profile    = :live_profile
+            WHERE id = $id_usuario";
+     try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->bindParam(':nome', $nome);
+        $resultado->bindParam(':genero', $genero);
+        $resultado->bindParam(':idade', $idade);
+        $resultado->bindParam(':senha', $senha);
+        $resultado->bindParam(':nickname', $nickname);
+        $resultado->bindParam(':steam_profile', $steam_profile);
+        $resultado->bindParam(':psn_profile', $psn_profile);
+        $resultado->bindParam(':live_profile', $live_profile);
+        $resultado->execute();
+        echo json_encode("Usuario modificado com sucesso!");
+
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+$app->delete('/api/deletaUsuario/{id}', function(Request $request, Response $response){
+    $id_usuario = $request->getAttribute('id');
+
+    $sql = "DELETE FROM usuario  WHERE id = $id_usuario";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->execute();
+      if($resultado->rowCount() > 0 ){
+          echo json_encode("Usuario  deletado!");
+      }else{
+          echo json_encode("Usuario id invalido");
+      }
+      
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+$app->post('/api/novoUsuario', function(Request $request, Response $response){
+    $nome           = $request->getParam('nome');
+    $genero         = $request->getParam('genero');
+    $idade          = $request->getParam('idade');
+    $senha          = $request->getParam('senha');
+    $email          = $request->getParam('email');
+    $nickname       = $request->getParam('nickname');
+    $steam_profile  = $request->getParam('steam_profile');
+    $psn_profile    = $request->getParam('psn_profile');
+    $live_profile   = $request->getParam('live_profile');
+  
+    
+      $sql = "INSERT INTO usuario (nome,genero,idade,senha,email,nickname,steam_profile,psn_profile,live_profile) 
+              VALUES (:nome,:genero,:idade,:senha,:email,:nickname,:steam_profile,:psn_profile,:live_profile)";
+      try{
+          $db = new db();
+          $db = $db->connectDB();
+          $resultado = $db->prepare($sql);
+          $resultado->bindParam(':nome', $nome);
+          $resultado->bindParam(':genero', $genero);
+          $resultado->bindParam(':idade', $idade);
+          $resultado->bindParam(':senha', $senha);
+          $resultado->bindParam(':nickname', $nickname);
+          $resultado->bindParam(':steam_profile', $steam_profile);
+          $resultado->bindParam(':psn_profile', $psn_profile);
+          $resultado->bindParam(':live_profile', $live_profile);
+          $resultado->execute();
+          echo json_encode("Novo usuario adicionado com sucesso!");
+  
+          $resultado = null;
+          $db = null;
+      }catch(PDOException $e){
+          echo '{"error" : {"text":'.$e->getMessage().'}';
+      }
+});
+
+$app->get('/api/verUsuario/{id}', function(Request $request, Response $response){
+    $id_usuario = $request->getAttribute('id');
+    $sql = "SELECT * FROM usuario WHERE id = $id_usuario";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->query($sql);
+        if ($resultado->rowCount() > 0) {
+            $plataformas = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($plataformas);
+        }else{ echo json_encode("Nenhum Usuario encontrado"); }
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
+});
+
+/*    [Modulo usuario FIM] */
