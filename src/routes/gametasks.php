@@ -143,8 +143,8 @@ $app->get('/api/listaPlataformas', function(Request $request, Response $response
         $db = $db->connectDB();
         $resultado = $db->query($sql);
         if ($resultado->rowCount() > 0) {
-            $jogos = $resultado->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($jogos);
+            $plataformas = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($plataformas);
         }else{ echo json_encode("Nenhuma plataforma encontrada"); }
         $resultado = null;
         $db = null;
@@ -245,8 +245,8 @@ $app->get('/api/listaGeneros', function(Request $request, Response $response){
         $db = $db->connectDB();
         $resultado = $db->query($sql);
         if ($resultado->rowCount() > 0) {
-            $jogos = $resultado->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($jogos);
+            $generos = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($generos);
         }else{ echo json_encode("Nenhum genero encontrado"); }
         $resultado = null;
         $db = null;
@@ -347,8 +347,8 @@ $app->get('/api/listaUsuarios', function(Request $request, Response $response){
         $db = $db->connectDB();
         $resultado = $db->query($sql);
         if ($resultado->rowCount() > 0) {
-            $jogos = $resultado->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($jogos);
+            $usuarios = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($usuarios);
         }else{ echo json_encode("Nenhum usuario encontrado"); }
         $resultado = null;
         $db = null;
@@ -370,7 +370,7 @@ $app->put('/api/atualizaUsuario/{id}', function(Request $request, Response $resp
     $sql = "UPDATE usuario SET 
             nome            = :nome, 
             genero          = :genero,
-            dt_nasc           = :dt_nasc,
+            dt_nasc         = :dt_nasc,
             senha           = :senha, 
             email           = :email, 
             nickname        = :nickname, 
@@ -392,7 +392,11 @@ $app->put('/api/atualizaUsuario/{id}', function(Request $request, Response $resp
         $resultado->bindParam(':psn_profile', $psn_profile);
         $resultado->bindParam(':live_profile', $live_profile);
         $resultado->execute();
-        echo json_encode("Usuario modificado com sucesso!");
+        if($resultado->rowCount() > 0 ){
+            echo json_encode("Usuario  modificado com sucesso!");
+        }else{
+            echo json_encode("Usuario id invalido");
+        }
 
         $resultado = null;
         $db = null;
@@ -477,3 +481,141 @@ $app->get('/api/verUsuario/{id}', function(Request $request, Response $response)
 });
 
 /*    [Modulo usuario FIM] */
+
+
+
+
+/*  [Modulo game-task] */
+
+$app->get('/api/listaGameTasksByUser/{id}', function(Request $request, Response $response){
+    $id_usuario = $request->getAttribute('id');
+    $sql = "SELECT * FROM game_task AS gt
+            JOIN jogos j        ON gt.id_jogo_task = j.id
+            JOIN plataformas p  ON gt.id_plataforma_task = p.id 
+            WHERE gt.id_usuario = $id_usuario";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->query($sql);
+        if ($resultado->rowCount() > 0) {
+            $gameTask = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($gameTask);
+        }else{ echo json_encode("Nenhum jogo encontrado na sua gametask"); }
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){ echo '{"error" : {"text":'.$e->getMessage().'}'; }
+});
+
+$app->put('/api/atualizaGameTaskUser/{id}', function(Request $request, Response $response){
+    $id_usuario             = $request->getAttribute('id');
+    $id_jogo_task           = $request->getParam('id_jogo_task');  
+    $id_plataforma_task     = $request->getParam('id_plataforma_task'); 
+    $finalizado             = $request->getParam('finalizado');
+    $jogando                = $request->getParam('jogando');
+    $parado                 = $request->getParam('parado');
+    $rejogando              = $request->getParam('rejogando');
+    $current_progress_time  = $request->getParam('current_progress_time');
+    $id_usuario             = $request->getParam('id_usuario');
+    $percent_complete       = $request->getParam('percent_complete');
+    $priority               = $request->getParam('priority');
+
+    $sql = "UPDATE game_task SET 
+            id_jogo_task            = :id_jogo_task, 
+            id_plataforma_task      = :id_plataforma_task, 
+            finalizado              = :finalizado, 
+            jogando                 = :jogando, 
+            parado                  = :parado, 
+            rejogando               = :rejogando, 
+            current_progress_time   = :current_progress_time, 
+            id_usuario              = :id_usuario, 
+            percent_complete        = :percent_complete, 
+            priority                = :priority
+            WHERE id_usuario        = $id_usuario";
+     try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->bindParam(':id_jogo_task'           , $id_jogo_task);
+        $resultado->bindParam(':id_plataforma_task'     , $id_plataforma_task);
+        $resultado->bindParam(':finalizado'             , $finalizado);
+        $resultado->bindParam(':jogando'                , $jogando);
+        $resultado->bindParam(':parado'                 , $parado);
+        $resultado->bindParam(':rejogando'              , $rejogando);
+        $resultado->bindParam(':current_progress_time'  , $current_progress_time);
+        $resultado->bindParam(':id_usuario'             , $id_usuario);
+        $resultado->bindParam(':percent_complete'       , $percent_complete);
+        $resultado->bindParam(':priority'               , $priority);
+        $resultado->execute();
+        
+        echo json_encode("GameTask modificada com sucesso!");
+
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+$app->delete('/api/deletaGameTaskUser/{id}', function(Request $request, Response $response){
+    $id_usuario = $request->getAttribute('id');
+
+    $sql = "DELETE FROM game_task  WHERE id = $id_usuario";
+    try{
+        $db = new db();
+        $db = $db->connectDB();
+        $resultado = $db->prepare($sql);
+        $resultado->execute();
+      if($resultado->rowCount() > 0 ){
+          echo json_encode("gameTask  deletada!");
+      }else{
+          echo json_encode("gameTask id invalido");
+      }
+      
+        $resultado = null;
+        $db = null;
+    }catch(PDOException $e){
+        echo '{"error" : {"text":'.$e->getMessage().'}';
+    }
+});
+
+$app->post('/api/novaGameTask', function(Request $request, Response $response){
+    $resultado->bindParam(':id_jogo_task'           , $id_jogo_task);
+    $resultado->bindParam(':id_plataforma_task'     , $id_plataforma_task);
+    $resultado->bindParam(':finalizado'             , $finalizado);
+    $resultado->bindParam(':jogando'                , $jogando);
+    $resultado->bindParam(':parado'                 , $parado);
+    $resultado->bindParam(':rejogando'              , $rejogando);
+    $resultado->bindParam(':current_progress_time'  , $current_progress_time);
+    $resultado->bindParam(':id_usuario'             , $id_usuario);
+    $resultado->bindParam(':percent_complete'       , $percent_complete);
+    $resultado->bindParam(':priority'               , $priority);
+  
+    
+      $sql = "INSERT INTO game_task (id_jogo_task, id_plataforma_task, finalizado, jogando, parado, rejogando, current_progress_time, id_usuario, percent_complete, priority) 
+              VALUES (:id_jogo_task, :id_plataforma_task, :finalizado, :jogando, :parado, :rejogando, :current_progress_time, :id_usuario, :percent_complete, :priority)";
+      try{
+          $db = new db();
+          $db = $db->connectDB();
+          $resultado = $db->prepare($sql);
+          $resultado->bindParam(':id_jogo_task'           , $id_jogo_task);
+          $resultado->bindParam(':id_plataforma_task'     , $id_plataforma_task);
+          $resultado->bindParam(':finalizado'             , $finalizado);
+          $resultado->bindParam(':jogando'                , $jogando);
+          $resultado->bindParam(':parado'                 , $parado);
+          $resultado->bindParam(':rejogando'              , $rejogando);
+          $resultado->bindParam(':current_progress_time'  , $current_progress_time);
+          $resultado->bindParam(':id_usuario'             , $id_usuario);
+          $resultado->bindParam(':percent_complete'       , $percent_complete);
+          $resultado->bindParam(':priority'               , $priority);
+          $resultado->execute();
+          echo json_encode("Novo gameTask adicionada com sucesso!");
+  
+          $resultado = null;
+          $db = null;
+      }catch(PDOException $e){
+          echo '{"error" : {"text":'.$e->getMessage().'}';
+      }
+});
+
+
+/*    [Modulo gameTasks FIM] */
