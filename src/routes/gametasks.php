@@ -556,10 +556,11 @@ $app->put('/api/atualizaGameTaskUser/{id}', function(Request $request, Response 
     }
 });
 
-$app->delete('/api/deletaGameTaskUser/{id}', function(Request $request, Response $response){
-    $id_usuario = $request->getAttribute('id');
-
-    $sql = "DELETE FROM game_task  WHERE id = $id_usuario";
+$app->delete('/api/deletaGameTaskUser/{id_gt}/{id_usuario}', function(Request $request, Response $response){
+    $id_usuario = $request->getAttribute('id_usuario');
+	$id_gt = $request->getAttribute('id_gt');
+	
+    $sql = "DELETE FROM game_task  WHERE id_gt = $id_gt and id_usuario = $id_usuario";
     try{
         $db = new db();
         $db = $db->connectDB();
@@ -568,7 +569,7 @@ $app->delete('/api/deletaGameTaskUser/{id}', function(Request $request, Response
       if($resultado->rowCount() > 0 ){
           echo json_encode("gameTask  deletada!");
       }else{
-          echo json_encode("gameTask id invalido");
+          echo json_encode("gameTask id_gt invalido (".$id_gt.")");
       }
       
         $resultado = null;
@@ -579,16 +580,19 @@ $app->delete('/api/deletaGameTaskUser/{id}', function(Request $request, Response
 });
 
 $app->post('/api/novaGameTask', function(Request $request, Response $response){
-    $resultado->bindParam(':id_jogo_task'           , $id_jogo_task);
-    $resultado->bindParam(':id_plataforma_task'     , $id_plataforma_task);
-    $resultado->bindParam(':finalizado'             , $finalizado);
-    $resultado->bindParam(':jogando'                , $jogando);
-    $resultado->bindParam(':parado'                 , $parado);
-    $resultado->bindParam(':rejogando'              , $rejogando);
-    $resultado->bindParam(':current_progress_time'  , $current_progress_time);
-    $resultado->bindParam(':id_usuario'             , $id_usuario);
-    $resultado->bindParam(':percent_complete'       , $percent_complete);
-    $resultado->bindParam(':priority'               , $priority);
+	
+	$id_jogo_task       	= $request->getParam('id_jogo_task');
+    $id_plataforma_task     = $request->getParam('id_plataforma_task');
+    $finalizado        		= $request->getParam('finalizado');
+    $jogando          		= $request->getParam('jogando');
+    $parado          		= $request->getParam('parado');
+    $rejogando       		= $request->getParam('rejogando');
+    $current_progress_time  = $request->getParam('current_progress_time');
+    $id_usuario    			= $request->getParam('id_usuario');
+    $percent_complete   	= $request->getParam('percent_complete');
+	$priority   			= $request->getParam('priority');
+	
+
   
     
       $sql = "INSERT INTO game_task (id_jogo_task, id_plataforma_task, finalizado, jogando, parado, rejogando, current_progress_time, id_usuario, percent_complete, priority) 
